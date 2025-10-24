@@ -1,5 +1,11 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:dind' // Use a DinD image for the agent
+            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount host's Docker socket if not using true DinD
+            privileged true // Required for DinD
+        }
+    }
     environment {
         GIT_BRANCH = 'dev'
         IMAGE_NAME = 'uv-fastapi'
