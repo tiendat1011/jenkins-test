@@ -1,11 +1,32 @@
 pipeline {
     agent {
-        docker {
-            image 'docker:dind' // Use a DinD image for the agent
-            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount host's Docker socket if not using true DinD
-            privileged true // Required for DinD
+           kubernetes {
+            label 'docker'
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: docker
+    image: docker:24.0.7-dind
+    securityContext:
+      privileged: true
+    tty: true
+  - name: builder
+    image: docker:24.0.7-cli
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: dind-storage
+      mountPath: /var/lib/docker
+  volumes:
+  - name: dind-storage
+    emptyDir: {}
+"""
         }
     }
+    
     environment {
         GIT_BRANCH = 'dev'
         IMAGE_NAME = 'uv-fastapi'
