@@ -36,7 +36,7 @@ pipeline {
         stage('Cleanup Docker image') {
             steps {
                 script {
-                    sh ""'
+                    sh """
                     docker rmi ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
                     """
                 }
