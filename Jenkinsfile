@@ -1,7 +1,7 @@
 pipeline {
     agent {
            kubernetes {
-            label 'docker'
+            inheritFrom 'docker'
             yaml """
 apiVersion: v1
 kind: Pod
@@ -26,7 +26,7 @@ spec:
 """
         }
     }
-    
+
     environment {
         GIT_BRANCH = 'dev'
         IMAGE_NAME = 'uv-fastapi'
