@@ -45,11 +45,9 @@ spec:
 
         stage('Build') {
             steps {
-                script {
-                    sh """
-                    docker build --no-cache -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
-                    """
-                }
+                sh """
+                docker build --no-cache -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
+                """
             }
         }
 
