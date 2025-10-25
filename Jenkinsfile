@@ -43,11 +43,13 @@ spec:
         }
 
         stage('Build') {
-            steps {
+            container('dind') {
+                steps {
                 script {
                     sh """
                     docker build --no-cache -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
                     """
+                    }
                 }
             }
         }
