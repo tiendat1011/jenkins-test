@@ -39,6 +39,7 @@ spec:
         stage('Checkout source') {
             steps{
                 checkout scm
+                sh "printenv"
             }
         }
 
