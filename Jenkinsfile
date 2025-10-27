@@ -10,7 +10,7 @@ pipeline {
         IMAGE_NAME = 'uv-fastapi'
         DOCKERHUB_USERNAME = 'tiendat1011'
         DOCKERHUB_CREDENTIALS = credentials('a2b6705a-b4a4-4e07-80b7-b33fca283e83')
-        IMAGE_TAG = 'latest'
+        IMAGE_TAG = env.GIT_COMMIT.take(8)
     }
 
     stages {
