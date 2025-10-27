@@ -30,12 +30,12 @@ pipeline {
             }
         }
 
-        stage('Push') {
+        stage('Registry Credentials') {
             steps {
-                script {
-                    sh """
-                    docker push ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
-                    """
+                container('dind') {
+                    withRegistry('https://index.docker.io/v1/', 'docker-hub-access-token') {
+                    def app = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+                    app.push()
                 }
             }
         }
