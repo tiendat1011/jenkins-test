@@ -11,6 +11,8 @@ pipeline {
         IMAGE_TAG = env.GIT_COMMIT.take(8)
         DOCKER_REGISTRY = 'https://hub.docker.com'
         DOCKERHUB_USERNAME = 'tiendat1011'
+        DOCKERHUB_CREDENTIAL = credentials('docker-hub-access-token')
+        DOCKERHUB_USR = 'tiendat9tc@gmail.com'
     }
 
     stages {
@@ -24,31 +26,20 @@ pipeline {
             steps {
                 container('dind') {
                     sh """
-                    docker build --no-cache -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
+                    echo "${DOCKERHUB_CREDENTIALS}" | docker login -u "${DOCKERHUB_USR}" --password-stdin
+                    docker build --no-cache -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} .
+                    docker push ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
+                    docker logout
                     """
                 }
             }
         }
 
-        stage('Registry Credentials') {
+        stage('Cleanup') {
             steps {
-                script {
-                    container('dind') {
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-access-token') {
-                    def app = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
-                    app.push()
-                    }
-                }
-                
-                }
-            }
-        }
-
-        stage('Cleanup Docker image') {
-            steps {
-                script {
+                container('dind') {
                     sh """
-                    docker rmi ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
+                    docker rmi ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} || true
                     """
                 }
             }
