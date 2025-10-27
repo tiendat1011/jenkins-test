@@ -10,13 +10,13 @@ pipeline {
         IMAGE_NAME = 'uv-fastapi'
         DOCKERHUB_USERNAME = 'tiendat1011'
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-access-token')
+        IMAGE_TAG = 'latest'
     }
 
     stages {
         stage('Checkout source') {
             steps{
                 checkout scm
-                env.IMAGE_TAG = sh(script: "git rev-parse --short=8 HEAD", returnStdout: true).trim()
             }
         }
 
