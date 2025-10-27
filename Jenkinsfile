@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            label 'default'
+            label 'jenkinsci-jenkins-agent'
         }
     }
 
