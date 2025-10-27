@@ -8,8 +8,6 @@ pipeline {
     environment {
         GIT_BRANCH = 'dev'
         IMAGE_NAME = 'uv-fastapi'
-        IMAGE_TAG = env.GIT_COMMIT.take(8)
-        DOCKER_REGISTRY = 'https://hub.docker.com'
         DOCKERHUB_USERNAME = 'tiendat1011'
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-access-token')
     }
@@ -18,6 +16,7 @@ pipeline {
         stage('Checkout source') {
             steps{
                 checkout scm
+                env.IMAGE_TAG = sh(script: "git rev-parse --short=8 HEAD", returnStdout: true).trim()
             }
         }
 
