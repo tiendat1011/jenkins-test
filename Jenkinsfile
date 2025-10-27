@@ -1,31 +1,5 @@
 pipeline {
-    agent {
-           kubernetes {
-            inheritFrom 'docker'
-            yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: docker
-    image: docker:24.0.7-dind
-    securityContext:
-      privileged: true
-    tty: true
-  - name: builder
-    image: docker:24.0.7-cli
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: dind-storage
-      mountPath: /var/lib/docker
-  volumes:
-  - name: dind-storage
-    emptyDir: {}
-"""
-        }
-    }
+    agent any
 
     environment {
         GIT_BRANCH = 'dev'
@@ -39,15 +13,16 @@ spec:
         stage('Checkout source') {
             steps{
                 checkout scm
-                sh "printenv"
             }
         }
 
         stage('Build') {
             steps {
-                sh """
-                docker build --no-cache -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
-                """
+                container('dind') {
+                    sh """
+                    docker build --no-cache -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
+                    """
+                }
             }
         }
 
