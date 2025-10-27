@@ -8,4 +8,4 @@ def read_root():
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str | None = None):
-    return {"item_id": item_id, "query": q}
+    return {"item_id": 10, "query": q}
