@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent any {
+        kubernetes {
+            label 'default'
+        }
+    }
 
     environment {
         GIT_BRANCH = 'dev'
