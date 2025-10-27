@@ -11,7 +11,7 @@ pipeline {
         IMAGE_TAG = env.GIT_COMMIT.take(8)
         DOCKER_REGISTRY = 'https://hub.docker.com'
         DOCKERHUB_USERNAME = 'tiendat1011'
-        DOCKERHUB_CREDENTIAL = credentials('docker-hub-access-token')
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub-access-token')
         DOCKERHUB_USR = 'tiendat9tc@gmail.com'
     }
 
