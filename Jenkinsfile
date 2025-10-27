@@ -37,6 +37,7 @@ pipeline {
                     def app = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
                     app.push()
                 }
+                }
             }
         }
 
