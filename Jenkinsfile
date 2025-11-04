@@ -1,43 +1,43 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            inheritFrom 'default'
+        }
+    }
+
     environment {
         GIT_BRANCH = 'dev'
         IMAGE_NAME = 'uv-fastapi'
-        IMAGE_TAG = env.GIT_COMMIT.take(8)
-        DOCKER_REGISTRY = 'https://hub.docker.com'
         DOCKERHUB_USERNAME = 'tiendat1011'
+        DOCKERHUB_CREDENTIALS = credentials('a2b6705a-b4a4-4e07-80b7-b33fca283e83')
+        IMAGE_TAG = env.GIT_COMMIT.take(8)
     }
 
     stages {
         stage('Checkout source') {
-            checkout scm
+            steps{
+                checkout scm
+            }
         }
 
         stage('Build') {
             steps {
-                script {
+                container('dind') {
                     sh """
-                    docker build --no-cache -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
+                    echo "${DOCKERHUB_CREDENTIALS_PSW}" | docker login -u "${DOCKERHUB_CREDENTIALS_USR}" --password-stdin
+                    docker build --no-cache -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} .
+                    docker push ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
+                    docker logout
                     """
                 }
             }
         }
 
-        stage('Push') {
+        stage('Cleanup') {
             steps {
-                script {
+                container('dind') {
                     sh """
-                    docker push ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
-                    """
-                }
-            }
-        }
-
-        stage('Cleanup Docker image') {
-            steps {
-                script {
-                    sh ""'
-                    docker rmi ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
+                    docker rmi ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} || true
                     """
                 }
             }
